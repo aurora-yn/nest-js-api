@@ -84,6 +84,60 @@ export class MoviesService {
 }
 ```
 
+## Entities
+
+Entity class has to have models of database (Data type). Convention of the file name is 'model.entity.ts'.
+
+```ts
+export class Movie {
+  id: number;
+  title: string;
+  year: number;
+  genres: string[];
+}
+```
+
+## DTO (Data Transfer Object)
+
+Convention of the file name is 'function-model-dto.ts'. DTO allows to have better codes and validates all queries incoming using **ValidationPipe**
+
+```bash
+$ npm install class-validator class-transformer
+```
+
+```ts
+// create-movie.dto.ts
+export class CreateMovieDto {
+  @IsString() // validate each input value
+  readonly title: string;
+  @IsNumber()
+  readonly year: number;
+  @IsString({ each: true})
+  readonly genres: string[];
+}
+```
+
+```ts
+// main.ts
+app.useGlobalPipes(new ValidationPipe({
+  whitelist: true, // If set to true, validator will strip validated object of any properties that do not have any decorators. Any invalid properties won't even reach to validation.
+  forbidNonWhitelisted: true, // If set to true, it can stop requests if someone sends invalid properties.
+  transform: true, // If set to true, data from users will be transformed to actual data type that the system needs.
+}));
+```
+
+```bash
+# This allows to transform DTO
+$ npm i @nestjs/mapped-types
+```
+
+extends PartialType allows all properties does not have to update.
+
+```ts
+// update-movie.dto.ts
+export class UpdateMovieDto extends PartialType(CreateMovieDto) { }
+```
+
 # Insomnia
 Used [insomnia core](https://insomnia.rest/) to test
 
